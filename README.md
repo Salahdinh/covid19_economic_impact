@@ -3,11 +3,11 @@
 ## Project Overview
 In this project, I used the FRED (Federal Reserve Economic Data) API to analyze the S&P 500 index and general and state-level unemployment rates. I explored how to extract, clean, and visualize this data using Python, focusing on revealing economic trends and comparisons.
 
-## Usage
-To execute my analysis, I ran:
-```
-python main.py
-```
+## Python libraries installed:
+- `pandas`
+- `numpy`
+- `matplotlib`
+- `fredapi`
 I had my FRED API key set up, replacing the placeholder in the script with the actual key.
 
 ## Data Analysis Steps
