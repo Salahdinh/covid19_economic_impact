@@ -1,7 +1,7 @@
-# S&P 500 and Unemployment Rate Analysis Using FRED API
+# Python Project: Economic impact of the COVID-19
 
 ## Project Overview
-In this project, I used the FRED (Federal Reserve Economic Data) API to analyze the S&P 500 index and general and state-level unemployment rates. I explored how to extract, clean, and visualize this data using Python, focusing on revealing economic trends and comparisons.
+In this project, I used the FRED (Federal Reserve Economic Data) API to analyze the S&P 500 index and general and state-level unemployment rates during COVID-19. I explored how to extract, clean, and visualize this data using Python.
 
 ## Python libraries installed:
 - `pandas`
@@ -25,7 +25,6 @@ import matplotlib.pyplot as plt
 # Set style and display options
 plt.style.use('fivethirtyeight')
 pd.set_option('display.max_columns', 500)
-color_pal = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 
 # Import FRED API key
 from fredapi import Fred
@@ -102,3 +101,5 @@ plt.show()
 1. **S&P 500 Trends**: COVID-19 caused a sharp drop, but the market recovered faster than after the 2008 crash due to the COVID relief bill.
 2. **General Unemployment**: Unemployment spiked higher than in 2008 but bounced back quickly.  
 3. **State-Level Unemployment (May 2020)**: Nevada, Hawaii, and Michigan had the highest rates, showing COVID-19’s uneven impact across states.
+
+
