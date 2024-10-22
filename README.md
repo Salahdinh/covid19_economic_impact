@@ -1,91 +1,104 @@
+```markdown
 # S&P 500 and Unemployment Rate Analysis Using FRED API
 
-## Overview
-This project demonstrates how to use Python and the [FRED API](https://fred.stlouisfed.org/) to fetch and analyze economic data, focusing on the S&P 500 index and state-level unemployment rates. It provides a step-by-step guide to data fetching, processing, and visualization using `pandas`, `matplotlib`, and `plotly`. The aim is to make data analysis approachable for beginners and to offer insights into the U.S. economy, particularly during the COVID-19 pandemic.
-
-## Project Structure
-
-
-## Requirements
-Ensure you have the following Python libraries installed:
-- `pandas`
-- `numpy`
-- `matplotlib`
-- `plotly`
-- `fredapi`
-
-## Installation
-1. Clone the repository:
-    ```
-    git clone https://github.com/your-username/your-repository.git
-    ```
-2. Navigate to the project directory:
-    ```
-    cd your-repository
-    ```
-3. Install the required packages:
-    ```
-    pip install -r requirements.txt
-    ```
+## Project Overview
+In this project, I used the FRED (Federal Reserve Economic Data) API to analyze the S&P 500 index and general and state-level unemployment rates. I explored how to extract, clean, and visualize this data using Python, focusing on revealing economic trends and comparisons.
 
 ## Usage
-To run the analysis, execute:
+To execute my analysis, I ran:
+```
+python main.py
+```
 
-Make sure you have your FRED API key available and replace the placeholder in the code with your actual key.
+I had my FRED API key set up, replacing the placeholder in the script with the actual key.
 
 ## Data Analysis Steps
 
 ### 1. Setting Up the FRED API
-We begin by importing essential libraries and setting up the FRED API using an API key, which provides access to various economic datasets directly from the Federal Reserve.
+I began by importing essential libraries and setting up the FRED API using my API key. This allowed me to access a variety of economic datasets directly.
 
-### 2. Searching for Economic Data
-The `fred.search()` function is used to find relevant economic data, such as the S&P 500 and unemployment rates. For example:
 ```python
-sp_search = fred.search('S&P', order_by='popularity')
+!pip install fredapi > /dev/null
 
-This makes it easy to identify and retrieve datasets for analysis.
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-### 3. Visualizing S&P 500 Data
-We pull the S&P 500 data and use `matplotlib` to create a time series graph that visualizes trends over time:
+# Set style and display options
+plt.style.use('fivethirtyeight')
+pd.set_option('display.max_columns', 500)
+color_pal = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+
+# Import FRED API key
+from fredapi import Fred
+fred_key = '[API-KEY]'
+```
+
+### 2. Create The Fred Object
+
+```python
+fred = Fred(api_key=fred_key)
+```
+
+### 3. Pulling and Visualizing S&P 500 Data
+I fetched the S&P 500 data and used `matplotlib` to create a time series plot. This allowed me to see how the S&P 500 index has changed over time.
+
 ```python
 sp500 = fred.get_series(series_id='SP500')
 sp500.plot(figsize=(10, 5), title='S&P 500', lw=2)
+plt.show()
 ```
-This helps us understand market fluctuations and overall trends.
+![image](https://github.com/user-attachments/assets/1ad57669-7f82-4988-860d-d00793fcfb40)
 
-### 4. Analyzing Unemployment Rate Data
-We fetch state-level unemployment data, filter it, and consolidate it into a single `pandas` DataFrame. Using `plotly`, we can create interactive line plots for in-depth exploration:
+### 4. Pulling and Analyzing Unemployment Rate Data
+
+```python
+un_emp = fred.search('unemployment')
+unrate = fred.get_series('UNRATE')
+unrate.plot()
+```
+![image](https://github.com/user-attachments/assets/aa86884b-ad01-44d8-80ef-aaf637324dcd)
+
+
+### 5. Analyzing May 2020 Unemployment Rate per State
+I wanted to analyze how different states were impacted during the early months of the COVID-19 pandemic, so I specifically looked at unemployment rates in May 2020. This analysis helped me understand the variations across states during that period.
+
 ```python
 unemp_df = fred.search('unemployment rate state', filter=('frequency','Monthly'))
 unemp_df = unemp_df.query('seasonal_adjustment == "Seasonally Adjusted" and units == "Percent"')
-```
-Data cleaning and transformation ensure that we have accurate and useful information.
+unemp_df = unemp_df.loc[unemp_df['title'].str.contains('Unemployment Rate')]
+all_results = []
 
-### 5. Mapping FRED IDs to State Names
-To make the data easier to understand, we map the original FRED IDs to state names using a dictionary (`id_to_state`):
-```python
-unemployment_states.columns = [
-    id_to_state.get(col, col) for col in unemployment_states.columns
-]
-```
-This step replaces cryptic IDs with recognizable state names, clarifying the data when we analyze or plot it.
+for myid in unemp_df.index:
+    results = fred.get_series(myid)
+    results = results.to_frame(name=myid)
+    all_results.append(results)
+    time.sleep(0.1)  # Avoiding too fast requests to prevent being blocked
 
-### 6. Analyzing April 2020 Unemployment Rates
-We analyze unemployment rates for April 2020 to understand the early impact of the COVID-19 pandemic. The data is sorted and visualized in a horizontal bar plot:
-```python
-april_2020_data = unemployment_states.loc['2020-04-01'].sort_values()
-fig, ax = plt.subplots(figsize=(10, 5))
-april_2020_data.plot(kind='bar', ax=ax)
-ax.set_title("Unemployment Rate by State - April 2020")
-ax.set_xlabel("State")
-ax.set_ylabel("Unemployment Rate (%)")
+uemp_results = pd.concat(all_results, axis=1)
+
+# Dropping unnecessary columns
+cols_to_drop = [col for col in uemp_results if len(col) > 4]
+uemp_results = uemp_results.drop(columns=cols_to_drop, axis=1)
+uemp_states = uemp_results.dropna().copy()
+
+# Converting FRED IDs to state names for clarity
+id_to_state = unemp_df['title'].str.replace('Unemployment Rate in ', '').to_dict()
+uemp_states.columns = [id_to_state.get(c, c) for c in uemp_states.columns]
+
+ax = uemp_states.loc[uemp_states.index == '2020-05-01'].T \
+    .sort_values('2020-05-01') \
+    .plot(kind='barh', figsize=(8, 12), width=0.7, edgecolor='black',
+          title='Unemployment Rate by State, May 2020')
 ax.legend().remove()
+ax.set_xlabel('% Unemployed')
 plt.show()
 ```
-This plot clearly illustrates how different states were affected during the peak of the pandemic, providing valuable insights.
+![image](https://github.com/user-attachments/assets/4bed77d3-594b-4a02-85d1-97fac69be5e6)
 
-## Results
-The project yields several key insights:
-1. **S&P 500 Trends**: Clear visualization of the S&P 500 over time, showing how the market has performed historically.
-2. **State-Level Unemployment**: Analysis of unemployment rates across states, highlighting regional economic differences.
-3. **COVID-19 Impact**: Specific focus on unemployment rates during April 2020, showing which states were hardest hit by the pandemic.
+## Conclusions
+1. **S&P 500 Trends**: COVID-19 caused a sharp drop, but the market recovered faster than after the 2008 crash due to COVID relief bill.
+2. **General Unemployment**: Unemployment spiked higher than in 2008 but bounced back quickly.  
+3. **State-Level Unemployment (May 2020)**: Nevada, Hawaii, and Michigan had the highest rates, showing COVID-19’s uneven impact across states.
+
+```
