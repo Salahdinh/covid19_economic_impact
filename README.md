@@ -1,6 +1,6 @@
 # S&P 500 and Unemployment Rate Analysis Using FRED API
 
-## Introduction
+## Overview
 This project demonstrates how to use Python and the [FRED API](https://fred.stlouisfed.org/) to fetch and analyze economic data, focusing on the S&P 500 index and state-level unemployment rates. It provides a step-by-step guide to data fetching, processing, and visualization using `pandas`, `matplotlib`, and `plotly`. The aim is to make data analysis approachable for beginners and to offer insights into the U.S. economy, particularly during the COVID-19 pandemic.
 
 ## Project Structure
@@ -89,14 +89,3 @@ The project yields several key insights:
 1. **S&P 500 Trends**: Clear visualization of the S&P 500 over time, showing how the market has performed historically.
 2. **State-Level Unemployment**: Analysis of unemployment rates across states, highlighting regional economic differences.
 3. **COVID-19 Impact**: Specific focus on unemployment rates during April 2020, showing which states were hardest hit by the pandemic.
-
-## Contributing
-Feel free to submit issues, fork the repository, and make pull requests. Contributions to improve the codebase, fix bugs, or add new features are welcome!
-
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-```
-
-Feel free to copy this code block into your README.md file. Adjust any sections as needed to match your project specifics, like the repository URL or additional details.
